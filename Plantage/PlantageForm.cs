@@ -1,166 +1,153 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Plantage
 {
   public partial class PlantageForm : Form
   {
-    Graphics graphics;
-    Pen pen = new Pen(Color.Black, 1);
-    SolidBrush brush = new SolidBrush(Color.Red);
+    private Graphics graphics;
+    private readonly Pen pen = new Pen(color: Color.Black, width: 1);
+    private readonly SolidBrush brush = new SolidBrush(color: Color.Red);
+    private int lengthF;          // Schrittlänge
+    private double direction;         // Richtung in Grad
+    private double rotation = 30;   // Drehung in Grad 
 
-    int lengthF;          // Schrittlänge
-    double direction;         // Richtung in Grad
-    double rotation = 30;   // Drehung in Grad 
+    private Point a, b;
 
-    Point a, b;
-    
-
-
-    public PlantageForm()
-    {
-      InitializeComponent();
-    }
+    public PlantageForm() => InitializeComponent();
 
     private void PlantageForm_Load(object sender, EventArgs e)
     {
       graphics = CreateGraphics();
     }
 
-    private void btnInsertRuleUpperF_Click(object sender, EventArgs e)
+    private void ButtonInsertRuleUpperF_Click(object sender, EventArgs e)
     {
-      tbRuleset.AppendText("F");
+      textboxRuleset.AppendText(text: "F");
     }
 
-    private void btnInsertRuleLowerF_Click(object sender, EventArgs e)
+    private void ButtonInsertRuleLowerF_Click(object sender, EventArgs e)
     {
-      tbRuleset.AppendText("f");
+      textboxRuleset.AppendText(text: "f");
     }
 
-    private void btnInsertRulePlus_Click(object sender, EventArgs e)
+    private void ButtonInsertRulePlus_Click(object sender, EventArgs e)
     {
-      tbRuleset.AppendText("+");
+      textboxRuleset.AppendText(text: "+");
     }
 
-    private void btnInsertRuleMinus_Click(object sender, EventArgs e)
+    private void ButtonInsertRuleMinus_Click(object sender, EventArgs e)
     {
-      tbRuleset.AppendText("-");
+      textboxRuleset.AppendText(text: "-");
     }
 
-    private void btnInsertRuleBracketOpen_Click(object sender, EventArgs e)
+    private void ButtonInsertRuleBracketOpen_Click(object sender, EventArgs e)
     {
-      tbRuleset.AppendText("[");
+      textboxRuleset.AppendText(text: "[");
     }
 
-    private void btnInsertRuleBracketClose_Click(object sender, EventArgs e)
+    private void ButtonInsertRuleBracketClose_Click(object sender, EventArgs e)
     {
-      tbRuleset.AppendText("]");
+      textboxRuleset.AppendText(text: "]");
     }
 
-    private void btnGenerateRandomizedRuleset_Click(object sender, EventArgs e)
+    private void ButtonGenerateRandomizedRuleset_Click(object sender, EventArgs e)
     {
-
     }
 
-    private void btnGeneratePlant_Click(object sender, EventArgs e)
+    private void ButtonGeneratePlant_Click(object sender, EventArgs e)
     {
-
       a = new Point(600, 600); // Start-Punkt
       direction = -85;        // Start-Richtung in Grad 
       lengthF = (int)numStep.Value;
-      rotation = (float)numDegree.Value;
-
-      turtleGraphic("F", 6);  // Axiom und Iterationstiefe 
+      rotation = (float)numAngle.Value;
+      TurtleGraphic(instruction: "F", depth: 6);  // Axiom und Iterationstiefe 
     }
 
-    private void turtleGraphic(string instruction, int depth)
+    private void TurtleGraphic(string instruction, int depth)
     {
-      if (depth == 0) return;
-      depth -= 1;
-
-      Point aMark = new Point(0, 0);
+      if (depth == 0)
+      {
+        return;
+      }
+      depth--;
+      Point aMark = new Point(x: 0, y: 0);
       double directionMark = 0;
       // Dummy-Werte
-
       int i;
       char c;
       for (i = 0; i < instruction.Length; i++)
       {
-        c = instruction[i];
+        c = instruction[index: i];
         // Schritt Vorwärts
         if (c == 'F')
         {
-
           // Produktionsregel iterieren, solange Tiefe nicht erreicht ist
-          turtleGraphic(tbRuleset.ToString(), depth);
-
+          TurtleGraphic(instruction: textboxRuleset.ToString(), depth: depth);
           // Zeichnen: Ab 'a' in Richtung 'direction' einen Schritt der Länge 'lengthF'
           if (depth == 0)
           {
             double rad = 2 * Math.PI / 360 * direction; // Grad -> Radiant
-
-            int p = (int)(lengthF * Math.Cos(rad));
-            int q = (int)(lengthF * Math.Sin(rad));
-
-            b = new Point(a.X + p, a.Y + q);
-
-            graphics.DrawLine(pen, a, b);
-
+            int p = (int)(lengthF * Math.Cos(d: rad));
+            int q = (int)(lengthF * Math.Sin(a: rad));
+            b = new Point(x: a.X + p, y: a.Y + q);
+            graphics.DrawLine(pen: pen, pt1: a, pt2: b);
             a = b; // Neuer Startpunkt
           }
         }
-
         // Drehung links herum
-        else if (c == '+') direction += rotation;
-
+        else if (c == '+')
+        {
+          direction += rotation;
+        }
         // Drehung rechts herum
-        else if (c == '-') direction -= rotation;
-
+        else if (c == '-')
+        {
+          direction -= rotation;
+        }
         // Position und Richtung speichern
         else if (c == '[')
         {
           aMark = a;
           directionMark = direction;
         }
-
         // Zurück zu gespeicherter Position und Richtung
         else if (c == ']')
         {
           a = aMark;
           direction = directionMark;
-        } 
+        }
       }
-    } 
+    }
 
-    private void btnOpenRuleset_Click(object sender, EventArgs e)
+    private void ButtonOpenRuleset_Click(object sender, EventArgs e)
     {
-      OpenFileDialog ofd = new OpenFileDialog();
-      ofd.Filter = "Ruleset (*.prs)|*.prs| Textdateien (*.txt)|*.txt| Alle Dateien (*.*)|*.*";
-      ofd.Title = "Datei zum Öffnen auswählen";
+      OpenFileDialog ofd = new OpenFileDialog
+      {
+        Filter = "Ruleset (*.prs)|*.prs| Textdateien (*.txt)|*.txt| Alle Dateien (*.*)|*.*",
+        Title = "Datei zum Öffnen auswählen"
+      };
       if (ofd.ShowDialog() == DialogResult.OK)
       {
       }
     }
 
-    private void btnSaveRuleset_Click(object sender, EventArgs e)
+    private void ButtonSaveRuleset_Click(object sender, EventArgs e)
     {
-      SaveFileDialog sfd = new SaveFileDialog();
-      sfd.Filter = "Ruleset (*.prs)|*.prs| Textdateien (*.txt)|*.txt| Alle Dateien (*.*)|*.*";
-      sfd.Title = "Datei zum Speichern auswählen";
+      SaveFileDialog sfd = new SaveFileDialog
+      {
+        Filter = "Ruleset (*.prs)|*.prs| Textdateien (*.txt)|*.txt| Alle Dateien (*.*)|*.*",
+        Title = "Datei zum Speichern auswählen"
+      };
       if (sfd.ShowDialog() == DialogResult.OK)
       {
       }
     }
 
-    private void btnEraseRuleset_Click(object sender, EventArgs e)
+    private void ButtonEraseRuleset_Click(object sender, EventArgs e)
     {
-      tbRuleset.Clear();
+      textboxRuleset.Clear();
     }
-
   }
 }
