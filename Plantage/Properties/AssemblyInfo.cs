@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // Allgemeine Informationen über eine Assembly werden über die folgenden 
@@ -8,9 +7,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Plantage")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Silk Software")]
+[assembly: AssemblyCompany("Mijo Software")]
 [assembly: AssemblyProduct("Plantage")]
-[assembly: AssemblyCopyright("2010 Silk Software")]
+[assembly: AssemblyCopyright("2010 Mijo Software")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
